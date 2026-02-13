@@ -1,0 +1,8 @@
+
+# Environment secrets
+backend/.env
+.env
+.env.local
+
+# AI context (private)
+.context.md
