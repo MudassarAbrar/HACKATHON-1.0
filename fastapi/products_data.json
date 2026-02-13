@@ -1,0 +1,983 @@
+[
+    {
+        "id": 1,
+        "name": "Linen Summer Dress",
+        "description": "Lightweight breathable dress perfect for beach weddings and hot summer days. Features adjustable straps and flowing silhouette.",
+        "price": 79.99,
+        "category": "clothing",
+        "subcategory": "dresses",
+        "gender": "women",
+        "colors": [
+            "white",
+            "beige",
+            "light blue",
+            "mint green"
+        ],
+        "sizes": [
+            "XS",
+            "S",
+            "M",
+            "L",
+            "XL"
+        ],
+        "materials": [
+            "linen",
+            "cotton blend"
+        ],
+        "tags": [
+            "summer",
+            "dress",
+            "women",
+            "beach",
+            "wedding",
+            "casual",
+            "linen",
+            "breathable"
+        ],
+        "occasions": [
+            "wedding",
+            "beach",
+            "brunch",
+            "vacation"
+        ],
+        "seasons": [
+            "spring",
+            "summer"
+        ],
+        "stock": 15,
+        "sku": "CLO-DRS-001",
+        "rating": 4.7,
+        "reviews": 89
+    },
+    {
+        "id": 2,
+        "name": "Classic Leather Jacket",
+        "description": "Timeless genuine leather motorcycle jacket with quilted lining. Versatile enough for casual outings and evening events.",
+        "price": 249.99,
+        "category": "clothing",
+        "subcategory": "jackets",
+        "gender": "unisex",
+        "colors": [
+            "black",
+            "brown",
+            "cognac"
+        ],
+        "sizes": [
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"
+        ],
+        "materials": [
+            "genuine leather",
+            "polyester lining"
+        ],
+        "tags": [
+            "leather",
+            "jacket",
+            "biker",
+            "classic",
+            "outerwear",
+            "edgy",
+            "timeless"
+        ],
+        "occasions": [
+            "casual",
+            "evening",
+            "date night",
+            "concert"
+        ],
+        "seasons": [
+            "fall",
+            "winter",
+            "spring"
+        ],
+        "stock": 8,
+        "sku": "CLO-JKT-002",
+        "rating": 4.8,
+        "reviews": 156
+    },
+    {
+        "id": 3,
+        "name": "Silk Charmeuse Blouse",
+        "description": "Elegant silk blouse with a flattering drape and pearl button details. Perfect transition piece from office to evening.",
+        "price": 129.99,
+        "category": "clothing",
+        "subcategory": "tops",
+        "gender": "women",
+        "colors": [
+            "ivory",
+            "dusty rose",
+            "navy",
+            "champagne"
+        ],
+        "sizes": [
+            "XS",
+            "S",
+            "M",
+            "L"
+        ],
+        "materials": [
+            "100% silk charmeuse"
+        ],
+        "tags": [
+            "silk",
+            "blouse",
+            "elegant",
+            "office",
+            "women",
+            "dressy",
+            "pearl buttons"
+        ],
+        "occasions": [
+            "work",
+            "dinner",
+            "date night",
+            "cocktail"
+        ],
+        "seasons": [
+            "spring",
+            "summer",
+            "fall"
+        ],
+        "stock": 12,
+        "sku": "CLO-TOP-003",
+        "rating": 4.5,
+        "reviews": 67
+    },
+    {
+        "id": 4,
+        "name": "Slim-Fit Selvedge Denim Jeans",
+        "description": "Premium Japanese selvedge denim with slight stretch for comfort. Raw unwashed finish develops unique fades over time.",
+        "price": 149.99,
+        "category": "clothing",
+        "subcategory": "pants",
+        "gender": "men",
+        "colors": [
+            "raw indigo",
+            "washed black",
+            "stone wash"
+        ],
+        "sizes": [
+            "28",
+            "30",
+            "32",
+            "34",
+            "36",
+            "38"
+        ],
+        "materials": [
+            "98% cotton",
+            "2% elastane",
+            "selvedge denim"
+        ],
+        "tags": [
+            "denim",
+            "jeans",
+            "slim-fit",
+            "selvedge",
+            "men",
+            "premium",
+            "japanese"
+        ],
+        "occasions": [
+            "casual",
+            "date night",
+            "work casual"
+        ],
+        "seasons": [
+            "spring",
+            "summer",
+            "fall",
+            "winter"
+        ],
+        "stock": 20,
+        "sku": "CLO-PNT-004",
+        "rating": 4.6,
+        "reviews": 203
+    },
+    {
+        "id": 5,
+        "name": "Cashmere Crewneck Sweater",
+        "description": "Ultra-soft 100% Mongolian cashmere sweater. Lightweight yet warm, with ribbed cuffs and hem for a polished look.",
+        "price": 189.99,
+        "category": "clothing",
+        "subcategory": "sweaters",
+        "gender": "unisex",
+        "colors": [
+            "camel",
+            "charcoal",
+            "navy",
+            "cream",
+            "burgundy"
+        ],
+        "sizes": [
+            "XS",
+            "S",
+            "M",
+            "L",
+            "XL"
+        ],
+        "materials": [
+            "100% Mongolian cashmere"
+        ],
+        "tags": [
+            "cashmere",
+            "sweater",
+            "luxury",
+            "soft",
+            "warm",
+            "crewneck",
+            "premium"
+        ],
+        "occasions": [
+            "work",
+            "casual",
+            "dinner",
+            "travel"
+        ],
+        "seasons": [
+            "fall",
+            "winter"
+        ],
+        "stock": 10,
+        "sku": "CLO-SWT-005",
+        "rating": 4.9,
+        "reviews": 112
+    },
+    {
+        "id": 6,
+        "name": "Tailored Wool Blazer",
+        "description": "Structured Italian wool blazer with half-canvas construction. Notch lapels and functional button cuffs for a refined silhouette.",
+        "price": 299.99,
+        "category": "clothing",
+        "subcategory": "blazers",
+        "gender": "men",
+        "colors": [
+            "charcoal",
+            "navy",
+            "camel"
+        ],
+        "sizes": [
+            "36",
+            "38",
+            "40",
+            "42",
+            "44"
+        ],
+        "materials": [
+            "Italian wool",
+            "silk lining"
+        ],
+        "tags": [
+            "blazer",
+            "formal",
+            "wool",
+            "tailored",
+            "men",
+            "business",
+            "italian"
+        ],
+        "occasions": [
+            "work",
+            "formal",
+            "wedding",
+            "interview"
+        ],
+        "seasons": [
+            "fall",
+            "winter",
+            "spring"
+        ],
+        "stock": 6,
+        "sku": "CLO-BLZ-006",
+        "rating": 4.7,
+        "reviews": 78
+    },
+    {
+        "id": 7,
+        "name": "Organic Cotton Graphic Tee",
+        "description": "Sustainably made t-shirt from 100% organic cotton. Relaxed fit with vintage-inspired graphic print. Pre-shrunk and garment-dyed.",
+        "price": 34.99,
+        "category": "clothing",
+        "subcategory": "t-shirts",
+        "gender": "unisex",
+        "colors": [
+            "vintage white",
+            "washed black",
+            "sage",
+            "dusty blue"
+        ],
+        "sizes": [
+            "XS",
+            "S",
+            "M",
+            "L",
+            "XL",
+            "XXL"
+        ],
+        "materials": [
+            "100% organic cotton"
+        ],
+        "tags": [
+            "t-shirt",
+            "casual",
+            "organic",
+            "sustainable",
+            "graphic",
+            "relaxed",
+            "vintage"
+        ],
+        "occasions": [
+            "casual",
+            "weekend",
+            "festival"
+        ],
+        "seasons": [
+            "spring",
+            "summer"
+        ],
+        "stock": 50,
+        "sku": "CLO-TEE-007",
+        "rating": 4.3,
+        "reviews": 312
+    },
+    {
+        "id": 8,
+        "name": "Minimalist Leather Watch",
+        "description": "Swiss quartz movement housed in a 40mm brushed steel case. Genuine Italian leather strap with quick-release spring bars.",
+        "price": 199.99,
+        "category": "accessories",
+        "subcategory": "watches",
+        "gender": "unisex",
+        "colors": [
+            "silver/tan",
+            "gold/black",
+            "rose gold/brown"
+        ],
+        "sizes": [
+            "one size"
+        ],
+        "materials": [
+            "stainless steel",
+            "Italian leather",
+            "sapphire crystal"
+        ],
+        "tags": [
+            "watch",
+            "minimalist",
+            "leather",
+            "swiss",
+            "elegant",
+            "classic",
+            "timepiece"
+        ],
+        "occasions": [
+            "work",
+            "formal",
+            "casual",
+            "date night"
+        ],
+        "seasons": [
+            "spring",
+            "summer",
+            "fall",
+            "winter"
+        ],
+        "stock": 18,
+        "sku": "ACC-WCH-008",
+        "rating": 4.6,
+        "reviews": 145
+    },
+    {
+        "id": 9,
+        "name": "14K Gold Layered Necklace",
+        "description": "Delicate 14K gold-plated layered necklace set with three chains at varying lengths. Hypoallergenic and tarnish-resistant.",
+        "price": 89.99,
+        "category": "accessories",
+        "subcategory": "jewelry",
+        "gender": "women",
+        "colors": [
+            "gold",
+            "rose gold",
+            "silver"
+        ],
+        "sizes": [
+            "one size"
+        ],
+        "materials": [
+            "14K gold plating",
+            "sterling silver base"
+        ],
+        "tags": [
+            "necklace",
+            "gold",
+            "layered",
+            "delicate",
+            "jewelry",
+            "women",
+            "elegant"
+        ],
+        "occasions": [
+            "date night",
+            "wedding",
+            "brunch",
+            "everyday"
+        ],
+        "seasons": [
+            "spring",
+            "summer",
+            "fall",
+            "winter"
+        ],
+        "stock": 25,
+        "sku": "ACC-NKL-009",
+        "rating": 4.4,
+        "reviews": 198
+    },
+    {
+        "id": 10,
+        "name": "Italian Silk Scarf",
+        "description": "Hand-rolled edges on luxurious Italian silk twill. Versatile 90x90cm square format — wear as headscarf, neck tie, or bag accessory.",
+        "price": 119.99,
+        "category": "accessories",
+        "subcategory": "scarves",
+        "gender": "women",
+        "colors": [
+            "floral blue",
+            "geometric red",
+            "paisley green",
+            "abstract mono"
+        ],
+        "sizes": [
+            "one size"
+        ],
+        "materials": [
+            "100% Italian silk twill"
+        ],
+        "tags": [
+            "scarf",
+            "silk",
+            "italian",
+            "luxury",
+            "versatile",
+            "printed",
+            "headscarf"
+        ],
+        "occasions": [
+            "work",
+            "brunch",
+            "travel",
+            "formal"
+        ],
+        "seasons": [
+            "spring",
+            "summer",
+            "fall"
+        ],
+        "stock": 14,
+        "sku": "ACC-SCF-010",
+        "rating": 4.5,
+        "reviews": 56
+    },
+    {
+        "id": 11,
+        "name": "Polarized Aviator Sunglasses",
+        "description": "Classic aviator frames with UV400 polarized lenses. Lightweight titanium alloy frame with adjustable nose pads.",
+        "price": 159.99,
+        "category": "accessories",
+        "subcategory": "eyewear",
+        "gender": "unisex",
+        "colors": [
+            "gold/green",
+            "silver/blue",
+            "black/grey"
+        ],
+        "sizes": [
+            "one size"
+        ],
+        "materials": [
+            "titanium alloy",
+            "polarized glass lenses"
+        ],
+        "tags": [
+            "sunglasses",
+            "aviator",
+            "polarized",
+            "UV protection",
+            "classic",
+            "summer"
+        ],
+        "occasions": [
+            "casual",
+            "beach",
+            "driving",
+            "vacation"
+        ],
+        "seasons": [
+            "spring",
+            "summer"
+        ],
+        "stock": 22,
+        "sku": "ACC-SUN-011",
+        "rating": 4.7,
+        "reviews": 234
+    },
+    {
+        "id": 12,
+        "name": "Quilted Leather Crossbody Bag",
+        "description": "Compact quilted lambskin crossbody with adjustable chain strap. Interior card slots and zippered compartment.",
+        "price": 179.99,
+        "category": "accessories",
+        "subcategory": "bags",
+        "gender": "women",
+        "colors": [
+            "black",
+            "cream",
+            "dusty rose",
+            "red"
+        ],
+        "sizes": [
+            "one size"
+        ],
+        "materials": [
+            "lambskin leather",
+            "gold-tone hardware"
+        ],
+        "tags": [
+            "bag",
+            "crossbody",
+            "quilted",
+            "leather",
+            "compact",
+            "women",
+            "chain strap"
+        ],
+        "occasions": [
+            "date night",
+            "brunch",
+            "shopping",
+            "evening"
+        ],
+        "seasons": [
+            "spring",
+            "summer",
+            "fall",
+            "winter"
+        ],
+        "stock": 11,
+        "sku": "ACC-BAG-012",
+        "rating": 4.8,
+        "reviews": 167
+    },
+    {
+        "id": 13,
+        "name": "Art Deco Statement Earrings",
+        "description": "Geometric art deco-inspired drop earrings with cubic zirconia accents. Surgical steel posts for sensitive ears.",
+        "price": 59.99,
+        "category": "accessories",
+        "subcategory": "jewelry",
+        "gender": "women",
+        "colors": [
+            "gold/crystal",
+            "silver/emerald",
+            "rose gold/blush"
+        ],
+        "sizes": [
+            "one size"
+        ],
+        "materials": [
+            "brass",
+            "cubic zirconia",
+            "surgical steel posts"
+        ],
+        "tags": [
+            "earrings",
+            "statement",
+            "art deco",
+            "geometric",
+            "drop earrings",
+            "women",
+            "sparkle"
+        ],
+        "occasions": [
+            "cocktail",
+            "wedding",
+            "date night",
+            "formal"
+        ],
+        "seasons": [
+            "spring",
+            "summer",
+            "fall",
+            "winter"
+        ],
+        "stock": 30,
+        "sku": "ACC-EAR-013",
+        "rating": 4.3,
+        "reviews": 89
+    },
+    {
+        "id": 14,
+        "name": "Reversible Leather Belt",
+        "description": "Two belts in one — genuine full-grain leather with a twist buckle to switch between black and brown. Fits up to 42 inches.",
+        "price": 69.99,
+        "category": "accessories",
+        "subcategory": "belts",
+        "gender": "men",
+        "colors": [
+            "black/brown"
+        ],
+        "sizes": [
+            "S (28-32)",
+            "M (32-36)",
+            "L (36-40)",
+            "XL (40-44)"
+        ],
+        "materials": [
+            "full-grain leather",
+            "brushed nickel buckle"
+        ],
+        "tags": [
+            "belt",
+            "leather",
+            "reversible",
+            "men",
+            "classic",
+            "versatile",
+            "business"
+        ],
+        "occasions": [
+            "work",
+            "formal",
+            "casual"
+        ],
+        "seasons": [
+            "spring",
+            "summer",
+            "fall",
+            "winter"
+        ],
+        "stock": 35,
+        "sku": "ACC-BLT-014",
+        "rating": 4.5,
+        "reviews": 121
+    },
+    {
+        "id": 15,
+        "name": "Ultraboost Running Sneakers",
+        "description": "Responsive cushioned running shoes with knit upper and Continental rubber outsole. Energy-returning midsole for all-day comfort.",
+        "price": 179.99,
+        "category": "footwear",
+        "subcategory": "sneakers",
+        "gender": "unisex",
+        "colors": [
+            "core black",
+            "cloud white",
+            "solar red",
+            "navy"
+        ],
+        "sizes": [
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13"
+        ],
+        "materials": [
+            "primeknit upper",
+            "rubber outsole",
+            "boost midsole"
+        ],
+        "tags": [
+            "sneakers",
+            "running",
+            "athletic",
+            "comfortable",
+            "cushioned",
+            "boost",
+            "knit"
+        ],
+        "occasions": [
+            "workout",
+            "casual",
+            "travel",
+            "everyday"
+        ],
+        "seasons": [
+            "spring",
+            "summer",
+            "fall",
+            "winter"
+        ],
+        "stock": 28,
+        "sku": "FTW-SNK-015",
+        "rating": 4.6,
+        "reviews": 289
+    },
+    {
+        "id": 16,
+        "name": "Suede Chelsea Boots",
+        "description": "Classic Chelsea silhouette in premium Italian suede with elastic side panels and leather pull tab. Stacked leather heel.",
+        "price": 219.99,
+        "category": "footwear",
+        "subcategory": "boots",
+        "gender": "men",
+        "colors": [
+            "tan",
+            "charcoal",
+            "burgundy"
+        ],
+        "sizes": [
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13"
+        ],
+        "materials": [
+            "Italian suede",
+            "leather sole",
+            "elastic gore"
+        ],
+        "tags": [
+            "boots",
+            "chelsea",
+            "suede",
+            "men",
+            "classic",
+            "dressy",
+            "italian"
+        ],
+        "occasions": [
+            "casual",
+            "date night",
+            "work casual",
+            "weekend"
+        ],
+        "seasons": [
+            "fall",
+            "winter",
+            "spring"
+        ],
+        "stock": 9,
+        "sku": "FTW-BTS-016",
+        "rating": 4.7,
+        "reviews": 134
+    },
+    {
+        "id": 17,
+        "name": "Strappy Block Heel Sandals",
+        "description": "Elegant strappy sandals with comfortable 3-inch block heel. Padded insole and adjustable ankle strap for secure fit.",
+        "price": 109.99,
+        "category": "footwear",
+        "subcategory": "heels",
+        "gender": "women",
+        "colors": [
+            "nude",
+            "black",
+            "gold metallic",
+            "berry"
+        ],
+        "sizes": [
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10"
+        ],
+        "materials": [
+            "faux leather",
+            "padded insole"
+        ],
+        "tags": [
+            "heels",
+            "sandals",
+            "strappy",
+            "block heel",
+            "women",
+            "elegant",
+            "comfortable"
+        ],
+        "occasions": [
+            "wedding",
+            "cocktail",
+            "date night",
+            "brunch"
+        ],
+        "seasons": [
+            "spring",
+            "summer"
+        ],
+        "stock": 16,
+        "sku": "FTW-HLS-017",
+        "rating": 4.4,
+        "reviews": 98
+    },
+    {
+        "id": 18,
+        "name": "Canvas Slip-On Sneakers",
+        "description": "Effortless slip-on in organic canvas with vulcanized rubber sole. Reinforced toe cap and padded collar for easy all-day wear.",
+        "price": 49.99,
+        "category": "footwear",
+        "subcategory": "sneakers",
+        "gender": "unisex",
+        "colors": [
+            "off-white",
+            "black",
+            "olive",
+            "rust",
+            "navy"
+        ],
+        "sizes": [
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12"
+        ],
+        "materials": [
+            "organic canvas",
+            "vulcanized rubber"
+        ],
+        "tags": [
+            "slip-on",
+            "canvas",
+            "casual",
+            "sustainable",
+            "easy",
+            "everyday",
+            "minimal"
+        ],
+        "occasions": [
+            "casual",
+            "weekend",
+            "vacation",
+            "everyday"
+        ],
+        "seasons": [
+            "spring",
+            "summer",
+            "fall"
+        ],
+        "stock": 40,
+        "sku": "FTW-SNK-018",
+        "rating": 4.2,
+        "reviews": 267
+    },
+    {
+        "id": 19,
+        "name": "Waterproof Hiking Boots",
+        "description": "Trail-ready boots with Gore-Tex lining, Vibram outsole, and ankle support. Waterproof full-grain leather with breathable membrane.",
+        "price": 259.99,
+        "category": "footwear",
+        "subcategory": "boots",
+        "gender": "unisex",
+        "colors": [
+            "earth brown",
+            "granite grey"
+        ],
+        "sizes": [
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "13"
+        ],
+        "materials": [
+            "full-grain leather",
+            "Gore-Tex membrane",
+            "Vibram sole"
+        ],
+        "tags": [
+            "boots",
+            "hiking",
+            "waterproof",
+            "outdoor",
+            "trail",
+            "gore-tex",
+            "rugged"
+        ],
+        "occasions": [
+            "hiking",
+            "outdoor",
+            "travel",
+            "adventure"
+        ],
+        "seasons": [
+            "spring",
+            "summer",
+            "fall",
+            "winter"
+        ],
+        "stock": 13,
+        "sku": "FTW-BTS-019",
+        "rating": 4.8,
+        "reviews": 176
+    },
+    {
+        "id": 20,
+        "name": "Leather Ballet Flats",
+        "description": "Timeless ballet flats in buttery-soft nappa leather with cushioned arch support. Flexible rubber sole and foldable design for travel.",
+        "price": 89.99,
+        "category": "footwear",
+        "subcategory": "flats",
+        "gender": "women",
+        "colors": [
+            "black",
+            "nude",
+            "red",
+            "metallic gold"
+        ],
+        "sizes": [
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10"
+        ],
+        "materials": [
+            "nappa leather",
+            "rubber sole",
+            "memory foam insole"
+        ],
+        "tags": [
+            "flats",
+            "ballet",
+            "leather",
+            "comfortable",
+            "women",
+            "foldable",
+            "travel"
+        ],
+        "occasions": [
+            "work",
+            "casual",
+            "travel",
+            "everyday"
+        ],
+        "seasons": [
+            "spring",
+            "summer",
+            "fall"
+        ],
+        "stock": 24,
+        "sku": "FTW-FLT-020",
+        "rating": 4.5,
+        "reviews": 143
+    }
+]
