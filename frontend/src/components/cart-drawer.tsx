@@ -12,7 +12,9 @@ interface CartDrawerProps {
 }
 
 export default function CartDrawer({ open, onClose }: CartDrawerProps) {
-  const { items, removeFromCart, updateQuantity, total, clearCart } = useCart();
+  const { items, removeItem, updateItem, clearCart, isLoading } = useCart();
+
+  const total = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
@@ -46,7 +48,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
               <AnimatePresence mode="popLayout">
                 {items.map((item) => (
                   <motion.div
-                    key={item.product.id}
+                    key={item.cart_item_id}
                     layout
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -56,7 +58,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                   >
                     <div className="w-20 h-24 rounded-md overflow-hidden bg-muted flex-shrink-0">
                       <img
-                        src={item.product.imageUrl}
+                        src={item.product.image_urls?.[0] || "/images/placeholder.png"}
                         alt={item.product.name}
                         className="w-full h-full object-cover"
                       />
@@ -66,8 +68,8 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                         {item.product.name}
                       </p>
                       <p className="text-xs text-muted-foreground mt-0.5">
-                        {item.selectedSize && `Size: ${item.selectedSize}`}
-                        {item.selectedColor && ` / ${item.selectedColor}`}
+                        {item.size && `Size: ${item.size}`}
+                        {item.color && ` / ${item.color}`}
                       </p>
                       <p className="text-sm font-semibold text-[hsl(247,75%,72%)] mt-1">
                         ${item.product.price.toFixed(2)}
@@ -76,8 +78,9 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                         <Button
                           size="sm"
                           variant="outline"
+                          disabled={isLoading}
                           onClick={() =>
-                            updateQuantity(item.product.id, item.quantity - 1)
+                            updateItem(item.cart_item_id, { quantity: item.quantity - 1 })
                           }
                           data-testid={`button-decrease-${item.product.id}`}
                         >
@@ -89,8 +92,9 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                         <Button
                           size="sm"
                           variant="outline"
+                          disabled={isLoading}
                           onClick={() =>
-                            updateQuantity(item.product.id, item.quantity + 1)
+                            updateItem(item.cart_item_id, { quantity: item.quantity + 1 })
                           }
                           data-testid={`button-increase-${item.product.id}`}
                         >
@@ -100,7 +104,8 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                           size="icon"
                           variant="ghost"
                           className="ml-auto text-muted-foreground"
-                          onClick={() => removeFromCart(item.product.id)}
+                          disabled={isLoading}
+                          onClick={() => removeItem(item.cart_item_id)}
                           data-testid={`button-remove-${item.product.id}`}
                         >
                           <Trash2 className="w-3 h-3" />

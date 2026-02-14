@@ -2,10 +2,12 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ProductCard from "@/components/product-card";
-import { getFeaturedProducts, getNewArrivals, products } from "@/lib/products";
-import { ArrowRight, Sparkles, Star, Truck, Shield, RotateCcw, ArrowDown } from "lucide-react";
+import { ArrowRight, Sparkles, Truck, Shield, RotateCcw, ArrowDown } from "lucide-react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getProducts } from "@/lib/api-client";
+import { Product } from "@/lib/types";
 
 interface HomeProps {
   onChatOpen: () => void;
@@ -46,7 +48,7 @@ function TextRevealLine({ children, delay = 0 }: { children: React.ReactNode; de
 }
 
 function Marquee({ items, speed = "normal" }: { items: string[]; speed?: "normal" | "slow" }) {
-  const content = items.join(" \u2022 ");
+  const content = items.join(" • ");
   return (
     <div className="overflow-hidden whitespace-nowrap">
       <div className={`marquee-track ${speed === "slow" ? "animate-marquee-slow" : "animate-marquee"}`}>
@@ -62,8 +64,16 @@ function Marquee({ items, speed = "normal" }: { items: string[]; speed?: "normal
 }
 
 export default function Home({ onChatOpen }: HomeProps) {
-  const featured = getFeaturedProducts();
-  const newArrivals = getNewArrivals();
+  // Fetch featured and new products from API
+  const { data: productsResponse } = useQuery({
+    queryKey: ["products", "all"],
+    queryFn: () => getProducts({}),
+  });
+
+  const allProducts = productsResponse?.success ? (productsResponse.data || []) : [];
+  const featured = allProducts.filter((p: Product) => p.is_featured).slice(0, 4);
+  const newArrivals = allProducts.filter((p: Product) => p.is_new).slice(0, 4);
+
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -71,6 +81,11 @@ export default function Home({ onChatOpen }: HomeProps) {
   });
   const heroImageY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+
+  // Category counts
+  const clothingCount = allProducts.filter((p: Product) => p.category === "clothing").length;
+  const footwearCount = allProducts.filter((p: Product) => p.category === "footwear").length;
+  const accessoriesCount = allProducts.filter((p: Product) => p.category === "accessories").length;
 
   return (
     <div className="min-h-screen">
@@ -168,32 +183,34 @@ export default function Home({ onChatOpen }: HomeProps) {
         />
       </section>
 
-      <section className="py-20 sm:py-28" data-testid="section-featured">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-          <ScrollReveal>
-            <div className="flex items-end justify-between gap-4 mb-12">
-              <div>
-                <p className="editorial-subheading text-primary/60 mb-3">Curated for you</p>
-                <h2 className="editorial-heading text-3xl sm:text-4xl lg:text-5xl text-foreground" data-testid="text-featured-title">
-                  Featured Pieces
-                </h2>
+      {featured.length > 0 && (
+        <section className="py-20 sm:py-28" data-testid="section-featured">
+          <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+            <ScrollReveal>
+              <div className="flex items-end justify-between gap-4 mb-12">
+                <div>
+                  <p className="editorial-subheading text-primary/60 mb-3">Curated for you</p>
+                  <h2 className="editorial-heading text-3xl sm:text-4xl lg:text-5xl text-foreground" data-testid="text-featured-title">
+                    Featured Pieces
+                  </h2>
+                </div>
+                <Link href="/shop">
+                  <Button variant="ghost" className="text-sm text-muted-foreground gap-1" data-testid="link-view-all-featured">
+                    View All <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </Link>
               </div>
-              <Link href="/shop">
-                <Button variant="ghost" className="text-sm text-muted-foreground gap-1" data-testid="link-view-all-featured">
-                  View All <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
+            </ScrollReveal>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+              {featured.map((product: Product, i: number) => (
+                <ScrollReveal key={product.id} delay={i * 0.1}>
+                  <ProductCard product={product} index={i} />
+                </ScrollReveal>
+              ))}
             </div>
-          </ScrollReveal>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {featured.map((product, i) => (
-              <ScrollReveal key={product.id} delay={i * 0.1}>
-                <ProductCard product={product} index={i} />
-              </ScrollReveal>
-            ))}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="relative py-32 sm:py-40 overflow-hidden" data-testid="section-sophia-cta">
         <div className="absolute inset-0">
@@ -278,32 +295,34 @@ export default function Home({ onChatOpen }: HomeProps) {
         <Marquee items={["Clothing", "Footwear", "Accessories", "New Arrivals", "Dresses", "Blazers", "Sneakers", "Watches"]} />
       </section>
 
-      <section className="py-20 sm:py-28" data-testid="section-new-arrivals">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-          <ScrollReveal>
-            <div className="flex items-end justify-between gap-4 mb-12">
-              <div>
-                <p className="editorial-subheading text-primary/60 mb-3">Just dropped</p>
-                <h2 className="editorial-heading text-3xl sm:text-4xl lg:text-5xl text-foreground" data-testid="text-new-arrivals-title">
-                  New Arrivals
-                </h2>
+      {newArrivals.length > 0 && (
+        <section className="py-20 sm:py-28" data-testid="section-new-arrivals">
+          <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+            <ScrollReveal>
+              <div className="flex items-end justify-between gap-4 mb-12">
+                <div>
+                  <p className="editorial-subheading text-primary/60 mb-3">Just dropped</p>
+                  <h2 className="editorial-heading text-3xl sm:text-4xl lg:text-5xl text-foreground" data-testid="text-new-arrivals-title">
+                    New Arrivals
+                  </h2>
+                </div>
+                <Link href="/shop">
+                  <Button variant="ghost" className="text-sm text-muted-foreground gap-1" data-testid="link-view-all-new">
+                    View All <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </Link>
               </div>
-              <Link href="/shop">
-                <Button variant="ghost" className="text-sm text-muted-foreground gap-1" data-testid="link-view-all-new">
-                  View All <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
+            </ScrollReveal>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+              {newArrivals.map((product: Product, i: number) => (
+                <ScrollReveal key={product.id} delay={i * 0.1}>
+                  <ProductCard product={product} index={i} />
+                </ScrollReveal>
+              ))}
             </div>
-          </ScrollReveal>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {newArrivals.map((product, i) => (
-              <ScrollReveal key={product.id} delay={i * 0.1}>
-                <ProductCard product={product} index={i} />
-              </ScrollReveal>
-            ))}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="relative py-24 sm:py-32 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
@@ -336,9 +355,9 @@ export default function Home({ onChatOpen }: HomeProps) {
           </ScrollReveal>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { name: "Clothing", count: products.filter((p) => p.category === "clothing").length, href: "/shop?category=clothing", image: "/images/products/cashmere-turtleneck.png" },
-              { name: "Footwear", count: products.filter((p) => p.category === "footwear").length, href: "/shop?category=footwear", image: "/images/products/chelsea-boots.png" },
-              { name: "Accessories", count: products.filter((p) => p.category === "accessories").length, href: "/shop?category=accessories", image: "/images/products/leather-watch.png" },
+              { name: "Clothing", count: clothingCount, href: "/shop?category=clothing", image: "/images/products/cashmere-turtleneck.png" },
+              { name: "Footwear", count: footwearCount, href: "/shop?category=footwear", image: "/images/products/chelsea-boots.png" },
+              { name: "Accessories", count: accessoriesCount, href: "/shop?category=accessories", image: "/images/products/leather-watch.png" },
             ].map((cat, i) => (
               <ScrollReveal key={cat.name} delay={i * 0.15}>
                 <Link href={cat.href}>

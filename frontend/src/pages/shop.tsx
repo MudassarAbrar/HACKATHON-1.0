@@ -1,8 +1,9 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useSearch } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import ProductCard from "@/components/product-card";
-import { products, filterProducts } from "@/lib/products";
-import { Button } from "@/components/ui/button";
+import { getProducts } from "@/lib/api-client";
+import { Product } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -12,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { Search, SlidersHorizontal, X, Loader2 } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 
 function ScrollReveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
@@ -42,26 +43,62 @@ export default function Shop() {
   const [sortBy, setSortBy] = useState("");
   const [priceRange, setPriceRange] = useState("");
 
-  const filteredProducts = useMemo(() => {
-    let result = filterProducts({
-      category: category || undefined,
-      sortBy: sortBy || undefined,
-      minPrice: priceRange === "under50" ? 0 : priceRange === "50to100" ? 50 : priceRange === "100to200" ? 100 : priceRange === "over200" ? 200 : undefined,
-      maxPrice: priceRange === "under50" ? 50 : priceRange === "50to100" ? 100 : priceRange === "100to200" ? 200 : undefined,
-    });
+  // Update category when URL changes (for header navigation)
+  useEffect(() => {
+    const urlCategory = params.get("category") || "";
+    setCategory(urlCategory);
+  }, [searchString]);
 
+  // Fetch products from API
+  const { data: productsResponse, isLoading, error } = useQuery({
+    queryKey: ["products", category, priceRange],
+    queryFn: async () => {
+      const minPrice = priceRange === "under50" ? 0 : priceRange === "50to100" ? 50 : priceRange === "100to200" ? 100 : priceRange === "over200" ? 200 : undefined;
+      const maxPrice = priceRange === "under50" ? 50 : priceRange === "50to100" ? 100 : priceRange === "100to200" ? 200 : undefined;
+
+      return getProducts({
+        category: category || undefined,
+        minPrice,
+        maxPrice,
+      });
+    },
+  });
+
+  const products = productsResponse?.success ? (productsResponse.data || []) : [];
+
+
+  // Client-side filtering for search and sorting
+  const filteredProducts = useMemo(() => {
+    let result = [...products];
+
+    // Search filter
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       result = result.filter(
-        (p) =>
+        (p: Product) =>
           p.name.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q) ||
-          p.tags.some((t) => t.includes(q))
+          p.description?.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q)
       );
     }
 
+    // Sorting
+    if (sortBy) {
+      switch (sortBy) {
+        case "price_low":
+          result.sort((a, b) => a.price - b.price);
+          break;
+        case "price_high":
+          result.sort((a, b) => b.price - a.price);
+          break;
+        case "newest":
+          result.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
+          break;
+      }
+    }
+
     return result;
-  }, [category, sortBy, priceRange, searchQuery]);
+  }, [products, searchQuery, sortBy]);
 
   const activeFilters = [
     category && { key: "category", label: category, clear: () => setCategory("") },
@@ -83,7 +120,7 @@ export default function Shop() {
               {category ? category.charAt(0).toUpperCase() + category.slice(1) : "All Products"}
             </h1>
             <p className="text-sm text-muted-foreground mt-3">
-              {filteredProducts.length} item{filteredProducts.length !== 1 ? "s" : ""}
+              {isLoading ? "Loading..." : `${filteredProducts.length} item${filteredProducts.length !== 1 ? "s" : ""}`}
             </p>
           </motion.div>
         </div>
@@ -128,7 +165,6 @@ export default function Shop() {
                 <SelectItem value="default">Default</SelectItem>
                 <SelectItem value="price_low">Price: Low to High</SelectItem>
                 <SelectItem value="price_high">Price: High to Low</SelectItem>
-                <SelectItem value="rating">Highest Rated</SelectItem>
                 <SelectItem value="newest">Newest First</SelectItem>
               </SelectContent>
             </Select>
@@ -182,7 +218,15 @@ export default function Shop() {
           </motion.div>
         )}
 
-        {filteredProducts.length === 0 ? (
+        {isLoading ? (
+          <div className="flex items-center justify-center py-24">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          </div>
+        ) : error ? (
+          <div className="text-center py-24">
+            <p className="text-destructive">Failed to load products. Please try again.</p>
+          </div>
+        ) : filteredProducts.length === 0 ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -196,7 +240,7 @@ export default function Shop() {
           </motion.div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {filteredProducts.map((product, i) => (
+            {filteredProducts.map((product: Product, i: number) => (
               <ScrollReveal key={product.id} delay={Math.min(i * 0.05, 0.4)}>
                 <ProductCard product={product} index={i} />
               </ScrollReveal>

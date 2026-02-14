@@ -1,24 +1,46 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Send, Sparkles, Bot, User, ShoppingBag, Mic, MicOff } from "lucide-react";
+import { Send, Sparkles, Bot, User, ShoppingBag } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import type { Product, ChatMessage } from "@/lib/products";
-import { products, searchProducts } from "@/lib/products";
+import { useQuery } from "@tanstack/react-query";
+import { getProducts } from "@/lib/api-client";
+import type { Product } from "@/lib/types";
 import { useCart } from "@/lib/cart-store";
 import { Link } from "wouter";
+import { useAuth } from "@/context/AuthContext";
 
 interface ChatPanelProps {
   open: boolean;
   onClose: () => void;
 }
 
+interface ChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  products?: Product[];
+  timestamp: Date;
+}
+
 const SOPHIA_INTRO = `Hey there! I'm Sophia, your personal style assistant. I can help you find the perfect outfit, recommend pieces based on your style, and even negotiate a deal for you. What are you looking for today?`;
 
-function generateResponse(message: string): { text: string; recommendedProducts: Product[]; mood: "warm" | "playful" | "expert" | "empathetic" } {
+// Simple client-side search function
+function searchProductsLocally(products: Product[], query: string): Product[] {
+  const lower = query.toLowerCase();
+  return products.filter(
+    (p) =>
+      p.name.toLowerCase().includes(lower) ||
+      p.description.toLowerCase().includes(lower) ||
+      p.category.toLowerCase().includes(lower) ||
+      p.subcategory.toLowerCase().includes(lower) ||
+      p.tags?.some((t) => t.toLowerCase().includes(lower))
+  );
+}
+
+function generateResponse(message: string, allProducts: Product[]): { text: string; recommendedProducts: Product[]; mood: "warm" | "playful" | "expert" | "empathetic" } {
   const lower = message.toLowerCase();
 
   if (lower.includes("discount") || lower.includes("cheaper") || lower.includes("deal") || lower.includes("birthday")) {
@@ -39,76 +61,76 @@ function generateResponse(message: string): { text: string; recommendedProducts:
   if (lower.includes("expensive") || lower.includes("too much") || lower.includes("can't afford")) {
     return {
       text: `I completely understand. Let me find some amazing options in a lower price range. Quality doesn't have to break the bank! Here are some beautifully crafted pieces under $100:`,
-      recommendedProducts: products.filter((p) => p.price < 100).slice(0, 4),
+      recommendedProducts: allProducts.filter((p) => p.price < 100).slice(0, 4),
       mood: "empathetic",
     };
   }
 
   if (lower.includes("summer") || lower.includes("beach") || lower.includes("vacation")) {
-    const results = products.filter(
-      (p) => p.seasons.includes("summer") || p.tags.includes("beach")
+    const results = allProducts.filter((p) =>
+      p.subcategory.toLowerCase().includes("summer") ||
+      p.tags?.some(t => t.toLowerCase().includes("summer") || t.toLowerCase().includes("beach"))
     ).slice(0, 4);
     return {
-      text: `Perfect timing! Here are some gorgeous summer picks. The Linen Summer Dress is a bestseller - breathable, elegant, and perfect for warm days. Want me to build a complete outfit?`,
+      text: `Perfect timing! Here are some gorgeous summer picks. ${results[0] ? `The ${results[0].name} is a bestseller - elegant and perfect for warm days. Want me to build a complete outfit?` : "Check out these beautiful pieces!"}`,
       recommendedProducts: results,
       mood: "warm",
     };
   }
 
   if (lower.includes("wedding") || lower.includes("formal")) {
-    const results = products.filter(
-      (p) => p.occasions.includes("wedding") || p.occasions.includes("formal")
+    const results = allProducts.filter((p) =>
+      p.tags?.some(t => t.toLowerCase().includes("wedding") || t.toLowerCase().includes("formal")) ||
+      p.subcategory.toLowerCase().includes("formal")
     ).slice(0, 4);
     return {
-      text: `Love a wedding look! I've pulled some stunning options. The Linen Summer Suit is perfect for outdoor ceremonies, and the Italian Leather Loafers tie the whole look together. Shall I pair them up?`,
+      text: `Love a wedding look! I've pulled some stunning options. ${results[0] ? `The ${results[0].name} is perfect for special occasions. Shall I pair them up?` : "Check out these elegant pieces!"}`,
       recommendedProducts: results,
       mood: "expert",
     };
   }
 
   if (lower.includes("dress") || lower.includes("dresses")) {
-    const results = products.filter((p) => p.subcategory === "dresses");
+    const results = allProducts.filter((p) => p.subcategory.toLowerCase().includes("dress"));
     return {
-      text: `I've got some beautiful dresses for you! The Linen Summer Dress is effortlessly chic, while the Red Cocktail Dress is a real head-turner. Which vibe are you going for?`,
-      recommendedProducts: results,
+      text: `I've got some beautiful dresses for you! ${results.length > 0 ? "These are effortlessly chic. Which vibe are you going for?" : "Let me find something perfect for you!"}`,
+      recommendedProducts: results.slice(0, 4),
       mood: "warm",
     };
   }
 
   if (lower.includes("shoes") || lower.includes("footwear") || lower.includes("boots") || lower.includes("sneakers")) {
-    const results = products.filter((p) => p.category === "footwear");
+    const results = allProducts.filter((p) => p.category === "footwear");
     return {
-      text: `Great taste! The Classic White Sneakers are a wardrobe staple - they literally go with everything. If you want something more refined, the Chelsea Boots are incredibly versatile. What's the occasion?`,
-      recommendedProducts: results,
+      text: `Great taste! ${results.length > 0 ? "These pieces are incredibly versatile. What's the occasion?" : "Let me show you some great options!"}`,
+      recommendedProducts: results.slice(0, 4),
       mood: "expert",
     };
   }
 
   if (lower.includes("bag") || lower.includes("bags") || lower.includes("accessories")) {
-    const results = products.filter((p) => p.category === "accessories").slice(0, 4);
+    const results = allProducts.filter((p) => p.category === "accessories").slice(0, 4);
     return {
-      text: `Accessories can make or break an outfit! The Italian Leather Messenger Bag is a timeless investment piece, and the Aviator Sunglasses add instant cool. What's your style preference?`,
+      text: `Accessories can make or break an outfit! What's your style preference?`,
       recommendedProducts: results,
       mood: "expert",
     };
   }
 
   if (lower.includes("outfit") || lower.includes("build")) {
-    const outfit = [
-      products.find((p) => p.id === 9)!,
-      products.find((p) => p.id === 18)!,
-      products.find((p) => p.id === 15)!,
-      products.find((p) => p.id === 12)!,
-    ].filter(Boolean);
+    const clothing = allProducts.filter(p => p.category === "clothing").slice(0, 1);
+    const footwear = allProducts.filter(p => p.category === "footwear").slice(0, 1);
+    const accessories = allProducts.filter(p => p.category === "accessories").slice(0, 2);
+    const outfit = [...clothing, ...footwear, ...accessories];
     const total = outfit.reduce((s, p) => s + p.price, 0);
     return {
-      text: `Here's a curated outfit I put together! The Cashmere Turtleneck pairs beautifully with the Tailored Trousers for a sleek silhouette. Add the Chelsea Boots and Silver Pendant to complete the look. Total: $${total.toFixed(2)} - want me to add the whole bundle to your bag?`,
+      text: `Here's a curated outfit I put together! Total: $${total.toFixed(2)} - want me to add the whole bundle to your bag?`,
       recommendedProducts: outfit,
       mood: "expert",
     };
   }
 
-  const results = searchProducts(message);
+  const results = searchProductsLocally(allProducts, message);
   if (results.length > 0) {
     return {
       text: `I found ${results.length} item${results.length > 1 ? "s" : ""} matching what you're looking for! Here are my top picks. Want me to filter or sort them differently?`,
@@ -125,7 +147,12 @@ function generateResponse(message: string): { text: string; recommendedProducts:
 }
 
 export default function ChatPanel({ open, onClose }: ChatPanelProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>([
+  const { user } = useAuth();
+  const { addItem } = useCart();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState<ChatMessage[]>(() => [
     {
       id: "intro",
       role: "assistant",
@@ -133,11 +160,15 @@ export default function ChatPanel({ open, onClose }: ChatPanelProps) {
       timestamp: new Date(),
     },
   ]);
-  const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const { addToCart } = useCart();
+
+  // Fetch all products for chat recommendations
+  const { data: productsResponse } = useQuery({
+    queryKey: ["products", "all"],
+    queryFn: () => getProducts({}),
+  });
+
+  const allProducts = productsResponse?.success ? productsResponse.data?.items || [] : [];
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -160,7 +191,7 @@ export default function ChatPanel({ open, onClose }: ChatPanelProps) {
     setIsTyping(true);
 
     setTimeout(() => {
-      const { text, recommendedProducts } = generateResponse(userMsg.content);
+      const { text, recommendedProducts } = generateResponse(userMsg.content, allProducts);
       const assistantMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
@@ -204,16 +235,14 @@ export default function ChatPanel({ open, onClose }: ChatPanelProps) {
                   </div>
                 )}
                 <div
-                  className={`max-w-[80%] space-y-2 ${
-                    msg.role === "user" ? "order-first" : ""
-                  }`}
+                  className={`max-w-[80%] space-y-2 ${msg.role === "user" ? "order-first" : ""
+                    }`}
                 >
                   <div
-                    className={`rounded-2xl px-3 py-2 text-sm leading-relaxed ${
-                      msg.role === "user"
-                        ? "bg-[hsl(247,75%,64%)] text-white rounded-br-sm"
-                        : "bg-[hsl(247,75%,64%)]/10 border border-[hsl(247,75%,64%)]/10 text-foreground rounded-bl-sm"
-                    }`}
+                    className={`rounded-2xl px-3 py-2 text-sm leading-relaxed ${msg.role === "user"
+                      ? "bg-[hsl(247,75%,64%)] text-white rounded-br-sm"
+                      : "bg-[hsl(247,75%,64%)]/10 border border-[hsl(247,75%,64%)]/10 text-foreground rounded-bl-sm"
+                      }`}
                     data-testid={`chat-message-${msg.id}`}
                   >
                     {msg.content}
@@ -229,7 +258,7 @@ export default function ChatPanel({ open, onClose }: ChatPanelProps) {
                         >
                           <div className="w-10 h-12 rounded overflow-hidden bg-muted flex-shrink-0">
                             <img
-                              src={product.imageUrl}
+                              src={product.image_urls?.[0] || "/images/placeholder.png"}
                               alt={product.name}
                               className="w-full h-full object-cover"
                             />
@@ -248,7 +277,7 @@ export default function ChatPanel({ open, onClose }: ChatPanelProps) {
                             size="icon"
                             variant="ghost"
                             className="flex-shrink-0"
-                            onClick={() => addToCart(product)}
+                            onClick={() => user && addItem(user.id, String(product.id))}
                             data-testid={`button-chat-add-${product.id}`}
                           >
                             <ShoppingBag className="w-3.5 h-3.5" />

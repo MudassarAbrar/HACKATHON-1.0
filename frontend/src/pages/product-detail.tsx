@@ -1,5 +1,8 @@
-import { useParams, Link } from "wouter";
-import { getProductById, products } from "@/lib/products";
+import { useParams, Link, useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+import { getProductById, getProducts } from "@/lib/api-client";
+import { Product } from "@/lib/types";
+import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/lib/cart-store";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -45,12 +48,36 @@ function ScrollReveal({ children, className = "", delay = 0 }: { children: React
 
 export default function ProductDetail({ onChatOpen }: ProductDetailProps) {
   const params = useParams<{ id: string }>();
-  const product = getProductById(Number(params.id));
-  const { addToCart } = useCart();
+  const { user } = useAuth();
+  const [, setLocation] = useLocation();
+  const { addItem } = useCart();
   const { toast } = useToast();
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [quantity, setQuantity] = useState(1);
+
+  // Fetch product by ID
+  const { data: productData, isLoading } = useQuery({
+    queryKey: ["product", params.id],
+    queryFn: () => getProductById(params.id),
+  });
+
+  // Fetch all products for related products
+  const { data: allProductsData } = useQuery({
+    queryKey: ["products"],
+    queryFn: () => getProducts({}),
+  });
+
+  const product = productData?.data;
+  const allProducts = allProductsData?.data || [];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen pt-24 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -65,20 +92,39 @@ export default function ProductDetail({ onChatOpen }: ProductDetailProps) {
     );
   }
 
-  const relatedProducts = products
+  const relatedProducts = allProducts
     .filter(
-      (p) =>
+      (p: Product) =>
         p.id !== product.id &&
-        (p.category === product.category || p.occasions.some((o) => product.occasions.includes(o)))
+        p.category === product.category
     )
     .slice(0, 4);
 
-  const handleAddToCart = () => {
-    addToCart(product, quantity, selectedSize || undefined, selectedColor || undefined);
-    toast({
-      title: "Added to bag",
-      description: `${product.name} has been added to your bag.`,
-    });
+  const handleAddToCart = async () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to add items to your cart",
+        variant: "destructive",
+      });
+      setLocation('/login');
+      return;
+    }
+    if (!product) return;
+
+    try {
+      await addItem(user.id, String(product.id), quantity, selectedSize || undefined, selectedColor || undefined);
+      toast({
+        title: "Added to bag",
+        description: `${product.name} has been added to your bag.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add item to cart.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -143,11 +189,10 @@ export default function ProductDetail({ onChatOpen }: ProductDetailProps) {
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    className={`w-4 h-4 ${
-                      i < Math.floor(product.rating)
-                        ? "fill-primary text-primary"
-                        : "text-muted-foreground/20"
-                    }`}
+                    className={`w-4 h-4 ${i < Math.floor(product.rating)
+                      ? "fill-primary text-primary"
+                      : "text-muted-foreground/20"
+                      }`}
                   />
                 ))}
               </div>
@@ -176,11 +221,10 @@ export default function ProductDetail({ onChatOpen }: ProductDetailProps) {
                     <button
                       key={color}
                       onClick={() => setSelectedColor(color)}
-                      className={`px-4 py-2 rounded-md border text-xs capitalize transition-all duration-200 ${
-                        selectedColor === color
-                          ? "border-primary bg-primary/10 text-foreground"
-                          : "border-border text-muted-foreground"
-                      }`}
+                      className={`px-4 py-2 rounded-md border text-xs capitalize transition-all duration-200 ${selectedColor === color
+                        ? "border-primary bg-primary/10 text-foreground"
+                        : "border-border text-muted-foreground"
+                        }`}
                       data-testid={`button-color-${color}`}
                     >
                       {color}
@@ -200,11 +244,10 @@ export default function ProductDetail({ onChatOpen }: ProductDetailProps) {
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
-                      className={`min-w-[2.5rem] px-3 py-2 rounded-md border text-xs font-medium flex items-center justify-center transition-all duration-200 ${
-                        selectedSize === size
-                          ? "border-primary bg-primary/10 text-foreground"
-                          : "border-border text-muted-foreground"
-                      }`}
+                      className={`min-w-[2.5rem] px-3 py-2 rounded-md border text-xs font-medium flex items-center justify-center transition-all duration-200 ${selectedSize === size
+                        ? "border-primary bg-primary/10 text-foreground"
+                        : "border-border text-muted-foreground"
+                        }`}
                       data-testid={`button-size-${size}`}
                     >
                       {size}

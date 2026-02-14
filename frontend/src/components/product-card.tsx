@@ -1,10 +1,12 @@
-import { Link } from "wouter";
-import type { Product } from "@/lib/products";
+import { Link, useLocation } from "wouter";
+import { Product } from "@/lib/types";
+import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, Star, Sparkles } from "lucide-react";
-import { useCart } from "@/lib/cart-store";
 import { motion } from "framer-motion";
+import { useCart } from "@/lib/cart-store";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProductCardProps {
   product: Product;
@@ -13,7 +15,37 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, index = 0, highlighted }: ProductCardProps) {
-  const { addToCart } = useCart();
+  const { addItem } = useCart();
+  const { user } = useAuth();
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
+
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to add items to your cart",
+        variant: "destructive",
+      });
+      setLocation('/login');
+      return;
+    }
+    try {
+      await addItem(user.id, String(product.id));
+      toast({
+        title: "Added to cart",
+        description: `${product.name} has been added to your bag.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add item to cart. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div data-testid={`card-product-${product.id}`}>
@@ -24,7 +56,7 @@ export default function ProductCard({ product, index = 0, highlighted }: Product
           transition={{ type: "spring", damping: 15 }}
         >
           <img
-            src={product.imageUrl}
+            src={product.image_urls?.[0] || "/images/placeholder.png"}
             alt={product.name}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             loading="lazy"
@@ -32,12 +64,12 @@ export default function ProductCard({ product, index = 0, highlighted }: Product
           <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a12]/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
           <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-            {product.isNew && (
+            {product.is_new && (
               <Badge variant="default" className="text-[10px]" data-testid={`badge-new-${product.id}`}>
                 New
               </Badge>
             )}
-            {product.stock < 5 && (
+            {product.stock && product.stock < 5 && (
               <Badge variant="destructive" className="text-[10px]" data-testid={`badge-low-stock-${product.id}`}>
                 Only {product.stock} left
               </Badge>
@@ -56,11 +88,7 @@ export default function ProductCard({ product, index = 0, highlighted }: Product
           <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
             <Button
               size="icon"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                addToCart(product);
-              }}
+              onClick={handleAddToCart}
               data-testid={`button-quick-add-${product.id}`}
             >
               <ShoppingBag className="w-4 h-4" />
@@ -75,14 +103,14 @@ export default function ProductCard({ product, index = 0, highlighted }: Product
             {product.name}
           </h3>
         </Link>
-        <p className="editorial-subheading text-primary/40 !text-[0.6rem]">{product.subcategory}</p>
+        <p className="editorial-subheading text-primary/40 !text-[0.6rem]">{product.category}</p>
         <div className="flex items-center justify-between gap-2">
           <span className="text-sm font-semibold text-foreground" data-testid={`text-product-price-${product.id}`}>
             ${product.price.toFixed(2)}
           </span>
           <div className="flex items-center gap-1">
             <Star className="w-3 h-3 fill-primary text-primary" />
-            <span className="text-[10px] text-muted-foreground">{product.rating}</span>
+            <span className="text-[10px] text-muted-foreground">4.8</span>
           </div>
         </div>
       </div>

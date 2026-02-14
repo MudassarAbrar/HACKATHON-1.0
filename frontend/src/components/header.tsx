@@ -1,8 +1,17 @@
 import { Link, useLocation } from "wouter";
-import { ShoppingBag, MessageCircle, Sun, Moon, Menu, X } from "lucide-react";
+import { ShoppingBag, MessageCircle, Sun, Moon, Menu, X, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/lib/theme-provider";
 import { useCart } from "@/lib/cart-store";
+import { useAuth } from "@/context/AuthContext";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -14,7 +23,8 @@ interface HeaderProps {
 export default function Header({ onCartOpen, onChatOpen }: HeaderProps) {
   const { theme, toggleTheme } = useTheme();
   const { itemCount } = useCart();
-  const [location] = useLocation();
+  const { user, signOut } = useAuth();
+  const [location, setLocation] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -40,19 +50,17 @@ export default function Header({ onCartOpen, onChatOpen }: HeaderProps) {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        showTransparent
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${showTransparent
           ? "bg-transparent border-b border-transparent"
           : "glass-panel-purple border-b border-[hsl(247,75%,64%)]/10"
-      }`}
+        }`}
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="flex items-center justify-between gap-4 h-16 sm:h-20">
           <Link href="/" data-testid="link-home">
             <motion.span
-              className={`font-serif text-lg sm:text-xl font-bold tracking-[0.15em] transition-colors duration-500 ${
-                showTransparent ? "text-white" : "text-foreground"
-              }`}
+              className={`font-serif text-lg sm:text-xl font-bold tracking-[0.15em] transition-colors duration-500 ${showTransparent ? "text-white" : "text-foreground"
+                }`}
               whileHover={{ opacity: 0.7 }}
               transition={{ duration: 0.2 }}
             >
@@ -64,11 +72,10 @@ export default function Header({ onCartOpen, onChatOpen }: HeaderProps) {
             {navLinks.map((link) => (
               <Link key={link.href} href={link.href}>
                 <span
-                  className={`text-xs font-medium uppercase tracking-[0.15em] transition-all duration-300 ${
-                    location === link.href
+                  className={`text-xs font-medium uppercase tracking-[0.15em] transition-all duration-300 ${location === link.href
                       ? showTransparent ? "text-white" : "text-foreground"
                       : showTransparent ? "text-white/40" : "text-muted-foreground"
-                  }`}
+                    }`}
                   data-testid={`nav-${link.label.toLowerCase()}`}
                 >
                   {link.label}
@@ -118,6 +125,53 @@ export default function Header({ onCartOpen, onChatOpen }: HeaderProps) {
               )}
             </Button>
 
+            {/* Auth UI */}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className={`relative ${showTransparent ? "text-white/60" : ""}`}
+                    data-testid="button-user-menu"
+                  >
+                    <Avatar className="w-7 h-7">
+                      <AvatarImage src={user.avatar_url} />
+                      <AvatarFallback className="text-xs">
+                        {user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="px-2 py-1.5">
+                    <p className="text-sm font-medium">{user.name || 'User'}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setLocation('/profile')}>
+                    <User className="w-4 h-4 mr-2" />
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={signOut}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setLocation('/login')}
+                className={`hidden sm:flex ${showTransparent ? "text-white/90 border-white/30 hover:bg-white/10" : ""}`}
+                data-testid="button-sign-in"
+              >
+                Sign In
+              </Button>
+            )}
+
             <Button
               size="icon"
               variant="ghost"
@@ -150,11 +204,10 @@ export default function Header({ onCartOpen, onChatOpen }: HeaderProps) {
                 >
                   <Link href={link.href}>
                     <span
-                      className={`block py-3 text-sm font-medium uppercase tracking-[0.15em] transition-colors ${
-                        location === link.href
+                      className={`block py-3 text-sm font-medium uppercase tracking-[0.15em] transition-colors ${location === link.href
                           ? "text-foreground"
                           : "text-muted-foreground"
-                      }`}
+                        }`}
                       onClick={() => setMobileMenuOpen(false)}
                       data-testid={`mobile-nav-${link.label.toLowerCase()}`}
                     >
